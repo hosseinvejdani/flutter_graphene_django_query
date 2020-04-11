@@ -25,6 +25,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Map<String, List<dynamic>> data = Map();
+  //
   String query = '''
   query{
     products{
@@ -40,28 +42,31 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('graphene query test...'),
       ),
-      body: Query(
-        options: QueryOptions(
-          documentNode: gql(query), // this is the query string you just created
-        ),
-        builder: (QueryResult result,
-            {VoidCallback refetch, FetchMore fetchMore}) {
-          if (result.hasException) {
-            return Text(result.exception.toString());
-          }
+      body: Center(
+        child: Query(
+          options: QueryOptions(
+            // this is the query string you just created
+            documentNode: gql(query),
+          ),
+          builder: (QueryResult result,
+              {VoidCallback refetch, FetchMore fetchMore}) {
+            if (result.hasException) {
+              return Text(result.exception.toString());
+            }
 
-          if (result.loading) {
-            return Center(child: CircularProgressIndicator());
-          }
-          // print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-          // print((result.data["products"].length));
-          return ListView.builder(
-            itemCount: result.data["products"].length,
-            itemBuilder: (BuildContext context, int index) {
-              return Center(child: Text(result.data["products"][index]["name"]));
-            },
-          );
-        },
+            if (result.loading) {
+              return Center(child: CircularProgressIndicator());
+            }
+            return ListView.builder(
+              itemCount: result.data["products"].length,
+              itemBuilder: (BuildContext context, int index) {
+                print(result.data.runtimeType);
+                return Center(
+                    child: Text(result.data["products"][index]["name"]));
+              },
+            );
+          },
+        ),
       ),
     );
   }
